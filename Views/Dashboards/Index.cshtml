@@ -1,5 +1,4 @@
 ﻿@{
-    ViewData["Title"] = "Dashboard";
     Layout = null;
 }
 
@@ -7,140 +6,127 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Dashboard - WinMovers</title>
+    <title>WinMovers</title>
 
+    <!-- Tailwind -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-
-    <style>
-        body {
-            margin: 0;
-            font-family: 'Segoe UI';
-            background: #f4f6f9;
-        }
-
-        .sidebar {
-            width: 250px;
-            height: 100vh;
-            background: #1e293b;
-            color: white;
-            position: fixed;
-        }
-
-            .sidebar h2 {
-                text-align: center;
-                padding: 20px;
-                background: #0f172a;
-            }
-
-            .sidebar ul {
-                list-style: none;
-                padding: 0;
-            }
-
-            .sidebar li {
-                padding: 15px;
-                cursor: pointer;
-            }
-
-                .sidebar li:hover {
-                    background: #334155;
-                }
-
-            .sidebar i {
-                margin-right: 10px;
-            }
-
-        .main {
-            margin-left: 250px;
-            padding: 20px;
-        }
-
-        .header {
-            background: white;
-            padding: 20px;
-            border-radius: 10px;
-            margin-bottom: 20px;
-        }
-
-        .btn {
-            padding: 8px 12px;
-            background: #00bcd4;
-            color: white;
-            border-radius: 5px;
-            border: none;
-            cursor: pointer;
-        }
-
-        .btn-danger {
-            background: red;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            background: white;
-        }
-
-        th, td {
-            padding: 10px;
-            border-bottom: 1px solid #ddd;
-        }
-
-    </style>
 </head>
 
-<body>
+<body class="bg-gray-100">
 
     <!-- SIDEBAR -->
-    <div class="sidebar">
-        <h2>WinMovers</h2>
-        <ul>
-            <li onclick="cargarVista('clientes')">
+    <div class="w-64 h-screen fixed bg-gradient-to-b from-cyan-700 to-blue-900 text-white shadow-xl">
+
+        <div class="p-5 text-center border-b border-white/20">
+            <h2 class="text-xl font-bold">WinMovers</h2>
+        </div>
+
+        <ul class="mt-4 space-y-2 px-2">
+
+            <li onclick="cargarVista('dashboard', this)" class="menu-item">
+                <i class="fas fa-chart-line"></i> Dashboard
+            </li>
+
+            <li onclick="cargarVista('clientes', this)" class="menu-item">
                 <i class="fas fa-users"></i> Clientes
             </li>
 
-            <li onclick="cargarVista('cotizaciones')">
+            <li onclick="cargarVista('cotizaciones', this)" class="menu-item">
                 <i class="fas fa-file-invoice"></i> Cotizaciones
             </li>
 
-            <li onclick="cargarVista('mudanzas')">
+            <li onclick="cargarVista('mudanzas', this)" class="menu-item">
                 <i class="fas fa-truck"></i> Mudanzas
             </li>
 
-            <li onclick="cargarVista('inventario')">
+            <li onclick="cargarVista('inventario', this)" class="menu-item">
                 <i class="fas fa-boxes"></i> Inventario
             </li>
 
-            <li onclick="cargarVista('empleados')">
+            <li onclick="cargarVista('empleados', this)" class="menu-item">
                 <i class="fas fa-user-tie"></i> Empleados
             </li>
+
+
+            <button onclick="logout()" class="bg-red-500 text-white px-4 py-2 rounded">
+                Cerrar Sesión
+            </button>
+
         </ul>
     </div>
 
-    <!-- CONTENIDO -->
-    <div class="main">
+    <!-- MAIN -->
+    <div class="ml-64 p-6">
 
-        <div class="header">
-            <h1>Panel Administrativo</h1>
-            <p>Bienvenido al sistema WinMovers</p>
+        <div class="bg-white p-6 rounded-xl shadow mb-6">
+            <h1 class="text-2xl font-bold text-gray-700">Panel Administrativo</h1>
+            <p class="text-gray-500">Sistema WinMovers</p>
         </div>
 
-        <!-- AQUÍ SE CARGA TODO -->
-        <div id="contenido">
-            <h2>Selecciona un módulo</h2>
+        <div id="contenido"></div>
+
+    </div>
+
+    <!-- MODAL GLOBAL -->
+    <div id="modal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+
+        <div class="bg-white p-6 rounded-xl w-96 shadow-lg">
+            <h2 class="text-lg font-bold mb-4">Nuevo Registro</h2>
+
+            <input type="text" placeholder="Nombre" class="w-full mb-3 p-2 border rounded">
+            <input type="email" placeholder="Correo" class="w-full mb-3 p-2 border rounded">
+
+            <div class="flex justify-end gap-2">
+                <button onclick="cerrarModal()" class="px-4 py-2 bg-gray-300 rounded">Cancelar</button>
+                <button class="px-4 py-2 bg-cyan-500 text-white rounded">Guardar</button>
+            </div>
         </div>
 
     </div>
 
-    <!-- SCRIPT -->
+    <style>
+        .menu-item {
+            display: flex;
+            gap: 10px;
+            padding: 12px;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+
+            .menu-item:hover {
+                background: rgba(255,255,255,0.1);
+            }
+
+        .active {
+            background: #00bcd4;
+        }
+    </style>
+
     <script>
-        function cargarVista(vista) {
+        function cargarVista(vista, elemento) {
+
+            document.querySelectorAll('.menu-item').forEach(e => e.classList.remove('active'));
+            if (elemento) elemento.classList.add('active');
+
             fetch('/Dashboards/CargarVista?nombre=' + vista)
                 .then(res => res.text())
-                .then(data => {
-                    document.getElementById('contenido').innerHTML = data;
+                .then(html => {
+                    document.getElementById('contenido').innerHTML = html;
                 });
         }
+
+        function abrirModal() {
+            document.getElementById("modal").classList.remove("hidden");
+        }
+
+        function cerrarModal() {
+            document.getElementById("modal").classList.add("hidden");
+        }
+
+        window.onload = () => cargarVista('dashboard');
     </script>
 
 </body>

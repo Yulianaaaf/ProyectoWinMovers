@@ -1,0 +1,171 @@
+﻿@{
+    Layout = null;
+}
+
+<div class="bg-white p-6 rounded-xl shadow">
+
+    <!-- HEADER -->
+    <div class="flex justify-between items-center mb-4">
+
+        <h2 class="text-xl font-bold text-gray-700">
+            Cotizaciones <span class="text-sm text-gray-400">0</span>
+        </h2>
+
+        <div class="flex gap-2">
+            <input type="text" placeholder="Buscar..."
+                   class="border p-2 rounded-lg text-sm w-52">
+
+            <button onclick="abrirModalCotizacion()"
+                    class="bg-cyan-500 text-white px-4 py-2 rounded-lg hover:bg-cyan-600">
+                Nuevo
+            </button>
+        </div>
+
+    </div>
+
+    <!-- TABLA -->
+    <div class="overflow-x-auto">
+
+        <table class="w-full text-sm">
+
+            <thead class="bg-gray-100">
+                <tr>
+                    <th class="p-3 text-left">Título</th>
+                    <th class="p-3 text-left">Origen</th>
+                    <th class="p-3 text-left">Destino</th>
+                    <th class="p-3 text-left">Monto</th>
+                    <th class="p-3 text-left">Estado</th>
+                    <th class="p-3 text-center">Acciones</th>
+                </tr>
+            </thead>
+
+            <tbody id="tablaCotizaciones">
+
+                <tr>
+                    <td colspan="6" class="text-center p-6 text-gray-400">
+                        No hay registros. Haz clic en "Nuevo" para empezar.
+                    </td>
+                </tr>
+
+            </tbody>
+
+        </table>
+
+    </div>
+</div>
+
+<!-- MODAL -->
+<div id="modalCotizacion" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+
+    <div class="bg-white p-6 rounded-xl w-[500px] shadow-lg">
+
+        <h2 class="text-lg font-bold mb-4">Nueva Cotización</h2>
+
+        <div class="grid grid-cols-2 gap-3">
+
+            <input id="titulo" type="text" placeholder="Título *" class="border p-2 rounded">
+            <input id="origen" type="text" placeholder="Origen *" class="border p-2 rounded">
+
+            <input id="destino" type="text" placeholder="Destino *" class="border p-2 rounded">
+            <input id="monto" type="number" placeholder="Monto ($)" class="border p-2 rounded">
+
+            <input id="fecha" type="date" class="border p-2 rounded">
+
+            <select id="estado" class="border p-2 rounded">
+                <option value="">Seleccionar...</option>
+                <option>Pendiente</option>
+                <option>Aprobada</option>
+                <option>Rechazada</option>
+            </select>
+
+            <textarea id="detalle" placeholder="Detalles" class="border p-2 rounded col-span-2"></textarea>
+
+        </div>
+
+        <div class="flex justify-end gap-2 mt-4">
+            <button onclick="cerrarModalCotizacion()" class="bg-gray-300 px-4 py-2 rounded">
+                Cancelar
+            </button>
+
+            <button onclick="guardarCotizacion()" class="bg-cyan-500 text-white px-4 py-2 rounded">
+                Guardar
+            </button>
+        </div>
+
+    </div>
+</div>
+
+<script>
+    let cotizaciones = [];
+
+    function abrirModalCotizacion() {
+        document.getElementById("modalCotizacion").classList.remove("hidden");
+    }
+
+    function cerrarModalCotizacion() {
+        document.getElementById("modalCotizacion").classList.add("hidden");
+    }
+
+    function guardarCotizacion() {
+
+        let titulo = document.getElementById("titulo").value;
+        let origen = document.getElementById("origen").value;
+        let destino = document.getElementById("destino").value;
+        let monto = document.getElementById("monto").value;
+        let estado = document.getElementById("estado").value;
+
+        if (!titulo || !origen || !destino) {
+            alert("Completa los campos obligatorios");
+            return;
+        }
+
+        cotizaciones.push({
+            titulo,
+            origen,
+            destino,
+            monto,
+            estado
+        });
+
+        renderTabla();
+        cerrarModalCotizacion();
+    }
+
+    function renderTabla() {
+
+        let tabla = document.getElementById("tablaCotizaciones");
+
+        if (cotizaciones.length === 0) {
+            tabla.innerHTML = `
+                <tr>
+                    <td colspan="6" class="text-center p-6 text-gray-400">
+                        No hay registros. Haz clic en "Nuevo" para empezar.
+                    </td>
+                </tr>
+            `;
+            return;
+        }
+
+        tabla.innerHTML = "";
+
+        cotizaciones.forEach((c, i) => {
+            tabla.innerHTML += `
+                <tr class="border-b">
+                    <td class="p-3">${c.titulo}</td>
+                    <td class="p-3">${c.origen}</td>
+                    <td class="p-3">${c.destino}</td>
+                    <td class="p-3">$${c.monto || 0}</td>
+                    <td class="p-3">${c.estado || "-"}</td>
+                    <td class="p-3 text-center">
+                        <button onclick="eliminar(${i})" class="text-red-500">Eliminar</button>
+                    </td>
+                </tr>
+            `;
+        });
+    }
+
+    function eliminar(index) {
+        cotizaciones.splice(index, 1);
+        renderTabla();
+    }
+</script>

@@ -1,0 +1,70 @@
+﻿@{
+    Layout = null;
+}
+
+<div class="bg-white p-6 rounded-xl shadow">
+
+    <div class="flex justify-between mb-4">
+        <h2 class="text-xl font-bold">Inventario</h2>
+        <button onclick="abrirModal()" class="bg-cyan-500 text-white px-4 py-2 rounded">Nuevo</button>
+    </div>
+
+    <table class="w-full text-sm">
+        <thead class="bg-gray-100">
+            <tr>
+                <th class="p-3">Nombre</th>
+                <th class="p-3">Cantidad</th>
+                <th class="p-3">Estado</th>
+                <th class="p-3">Acciones</th>
+            </tr>
+        </thead>
+        <tbody id="tabla">
+            <tr><td colspan="4" class="text-center p-6 text-gray-400">Sin registros</td></tr>
+        </tbody>
+    </table>
+</div>
+
+<div id="modal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
+    <div class="bg-white p-6 rounded w-96">
+        <input id="nombre" placeholder="Nombre" class="border p-2 w-full mb-2">
+        <input id="cantidad" type="number" placeholder="Cantidad" class="border p-2 w-full mb-2">
+
+        <button onclick="guardar()" class="bg-cyan-500 text-white px-4 py-2 rounded w-full">Guardar</button>
+    </div>
+</div>
+
+<script>
+    let data = [];
+
+    function abrirModal(){ modal.classList.remove("hidden"); }
+    function cerrarModal(){ modal.classList.add("hidden"); }
+
+    function guardar(){
+        data.push({
+            nombre: nombre.value,
+            cantidad: cantidad.value,
+            estado: "Disponible"
+        });
+        render();
+        cerrarModal();
+    }
+
+    function render(){
+        let html = "";
+        data.forEach((d,i)=>{
+            html += `
+            <tr>
+                <td class="p-3">${d.nombre}</td>
+                <td class="p-3">${d.cantidad}</td>
+                <td class="p-3">${d.estado}</td>
+                <td class="p-3"><button onclick="eliminar(${i})">❌</button></td>
+            </tr>`;
+        });
+        tabla.innerHTML = html;
+    }
+
+    function eliminar(i){
+        data.splice(i,1);
+        render();
+    }
+</script>

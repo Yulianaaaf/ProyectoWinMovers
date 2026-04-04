@@ -1,6 +1,11 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 
-namespace WinMovers.Controllers
+
+[Authorize]
+public class DashboardsController : Controller;
+
+namespace TuProyecto.Controllers
 {
     public class DashboardsController : Controller
     {
@@ -14,22 +19,22 @@ namespace WinMovers.Controllers
             switch (nombre)
             {
                 case "clientes":
-                    return PartialView("~/Views/Dashboards/_Clientes.cshtml");
-
-                case "cotizaciones":
-                    return PartialView("~/Views/Dashboards/_Cotizaciones.cshtml");
-
-                case "mudanzas":
-                    return PartialView("~/Views/Dashboards/_Mudanzas.cshtml");
+                    return PartialView("~/Views/Dashboards/Clientes.cshtml");
 
                 case "inventario":
-                    return PartialView("~/Views/Dashboards/_Inventario.cshtml");
+                    return PartialView("~/Views/Dashboards/Inventario.cshtml");
 
                 case "empleados":
-                    return PartialView("~/Views/Dashboards/_Empleados.cshtml");
+                    return PartialView("~/Views/Dashboards/Empleados.cshtml");
+
+                case "cotizaciones":
+                    return PartialView("~/Views/Dashboards/Cotizaciones.cshtml");
+
+                case "mudanzas":
+                    return PartialView("~/Views/Dashboards/Mudanzas.cshtml");
 
                 default:
-                    return Content("Vista no encontrada");
+                    return PartialView("~/Views/Dashboards/Dashboard.cshtml");
             }
         }
     }
