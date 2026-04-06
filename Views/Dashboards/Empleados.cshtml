@@ -24,48 +24,147 @@
     </table>
 </div>
 
-<div id="modal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
-    <div class="bg-white p-6 rounded w-96">
-        <input id="nombre" placeholder="Nombre" class="border p-2 w-full mb-2">
-        <input id="cargo" placeholder="Cargo" class="border p-2 w-full mb-2">
-        <input id="correo" placeholder="Correo" class="border p-2 w-full mb-2">
+<div id="modalEmpleado"
+     class="hidden fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
 
-        <button onclick="guardar()" class="bg-cyan-500 text-white px-4 py-2 rounded w-full">Guardar</button>
+    <div class="bg-white p-6 rounded w-96">
+
+        <h2 class="text-lg font-bold mb-3">
+            Nuevo Empleado
+        </h2>
+
+        <input id="nombre"
+               placeholder="Nombre"
+               class="border p-2 w-full mb-2">
+
+        <input id="cargo"
+               placeholder="Cargo"
+               class="border p-2 w-full mb-2">
+
+        <input id="correo"
+               placeholder="Correo"
+               class="border p-2 w-full mb-2">
+
+        <div class="flex justify-end gap-2 mt-3">
+
+            <button onclick="cerrarModalEmpleado()"
+                    class="bg-gray-300 px-4 py-2 rounded">
+                Cancelar
+            </button>
+
+            <button onclick="guardarEmpleado()"
+                    class="bg-cyan-500 text-white px-4 py-2 rounded">
+                Guardar
+            </button>
+        </div>
     </div>
 </div>
 
 <script>
-    let data = [];
 
-    function abrirModal(){ modal.classList.remove("hidden"); }
-    function cerrarModal(){ modal.classList.add("hidden"); }
+    let empleados = [];
 
-    function guardar(){
-        data.push({
-            nombre: nombre.value,
-            cargo: cargo.value,
-            correo: correo.value
-        });
-        render();
-        cerrarModal();
+    function abrirModalEmpleado() {
+        document.getElementById("modalEmpleado")
+            .classList.remove("hidden");
     }
 
-    function render(){
-        let html = "";
-        data.forEach((d,i)=>{
-            html += `
-            <tr>
-                <td class="p-3">${d.nombre}</td>
-                <td class="p-3">${d.cargo}</td>
-                <td class="p-3">${d.correo}</td>
-                <td class="p-3"><button onclick="eliminar(${i})">❌</button></td>
-            </tr>`;
-        });
-        tabla.innerHTML = html;
+    function cerrarModalEmpleado() {
+        document.getElementById("modalEmpleado")
+            .classList.add("hidden");
+
+        limpiarCamposEmpleado();
     }
 
-    function eliminar(i){
-        data.splice(i,1);
-        render();
+    // Cerrar haciendo click fuera
+    document.getElementById("modalEmpleado")
+        .addEventListener("click", function (e) {
+
+        if (e.target === this) {
+            cerrarModalEmpleado();
+        }
+
+    });
+
+    function limpiarCamposEmpleado() {
+
+        document.getElementById("nombre").value = "";
+        document.getElementById("cargo").value = "";
+        document.getElementById("correo").value = "";
+
+    }
+
+    function guardarEmpleado() {
+
+        let nombre = document.getElementById("nombre").value;
+        let cargo = document.getElementById("cargo").value;
+        let correo = document.getElementById("correo").value;
+
+        if (!nombre || !cargo || !correo) {
+            alert("Completa todos los campos");
+            return;
+        }
+
+        empleados.push({
+            nombre,
+            cargo,
+            correo
+        });
+
+        renderEmpleados();
+        cerrarModalEmpleado();
+    }
+
+    function renderEmpleados() {
+
+        let tabla = document.getElementById("tabla");
+
+        if (empleados.length === 0) {
+
+            tabla.innerHTML = `
+                <tr>
+                    <td colspan="4"
+                        class="text-center p-6 text-gray-400">
+                        Sin registros
+                    </td>
+                </tr>
+            `;
+
+            return;
+        }
+
+        tabla.innerHTML = "";
+
+        empleados.forEach((e, i) => {
+
+            tabla.innerHTML += `
+                <tr class="border-b">
+
+                    <td class="p-3">
+                        ${e.nombre}
+                    </td>
+
+                    <td class="p-3">
+                        ${e.cargo}
+                    </td>
+
+                    <td class="p-3">
+                        ${e.correo}
+                    </td>
+
+                    <td class="p-3 text-center">
+
+                        <button onclick="eliminarEmpleado(${i})"
+                                class="text-red-500 hover:underline">
+                            Eliminar
+                        </button>
+                    </td>
+                </tr>
+            `;
+        });
+    }
+    function eliminarEmpleado(index) {
+        empleados.splice(index, 1);
+        renderEmpleados();
     }
 </script>

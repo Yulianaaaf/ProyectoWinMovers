@@ -14,7 +14,7 @@
     <!-- Estilos -->
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
 </head>
-
+	
 <body>
 
     <!-- HEADER -->
@@ -70,7 +70,8 @@
     <!-- SCRIPTS -->
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
 
-    @await RenderSectionAsync("Scripts", required: false)
+	@await RenderSectionAsync("Scripts", required: false)
 
+	<script src="~/js/dashboard.js"></script>
 </body>
 </html>
